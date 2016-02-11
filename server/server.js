@@ -13,11 +13,20 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
-    socket.on('INFO', function(msg){
-        console.log('message: ' + msg);
+    socket.on('INFO', function(num){
+        console.log('Tone number request: ' + num);
+        //socket.emit('SONG', playToneNumber(num));
+        io.emit('SONG', playToneNumber(num));
     });
 });
 
 http.listen(3000, function(){
     console.log('listening on *:3000');
 });
+
+function playToneNumber(number){
+    var response = {
+        toneNumber: number
+    };
+    return JSON.stringify(response);
+}

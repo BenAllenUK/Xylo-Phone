@@ -15,15 +15,19 @@
 
   </div>
   <script>
+    var toneNumber = 2;
     var socket = io();
     //
     $( document ).ready(function() {
       console.log('ready');
       $('#btn').click(function() {
         console.log('Button Clicked');
-        socket.emit('INFO', 'Hello');
-        $('#content').append('Sent Message');
+        socket.emit('INFO', toneNumber);
+        $('#content').append('\n Sent Message');
         return false;
+      });
+      socket.on('SONG', function(toneNumber){
+        $('#content').append('\n Got Message: ' + toneNumber);
       });
     });
 
