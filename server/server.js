@@ -41,13 +41,13 @@ io.on('connection', function(socket){
 
     socket.on('HOVER_START', function(num){
         // Send response to all
-        console.log('Tone number request: ' + num);
+        console.log('HOVER_START: ' + num);
         io.emit('SONG', {'toneNumber': num, 'state': 1});
     });
 
     socket.on('HOVER_END', function(num){
         // Send response to all
-        console.log('Tone number request: ' + num);
+        console.log('HOVER_END: ' + num);
         io.emit('SONG', {'toneNumber': num, 'state': 0});
     });
 });
@@ -61,11 +61,14 @@ function sendBaseLayerRequest() {
 
 function promptForInput(){
     prompt.get('val', function (err, result) {
-        if(result.val != "e") {
+        if(result.val == "r") {
+          io.emit('RESET', 1);
+            
+        } else if (result.val == "e"){
+            process.exit();
+        } else {
             sendBaseLayerRequest();
             promptForInput();
-        } else {
-            process.exit();
         }
     });
 }
