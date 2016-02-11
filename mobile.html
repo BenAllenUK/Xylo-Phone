@@ -10,14 +10,25 @@
   <button id="hoverBtn">Hover hand</button>
   <button id="unhoverBtn">Unhover hand</button>
   <video id="video" width="640" height="480" autoplay></video>
-  <div id="btn">Click me</div>
+  <div id="btn">HOVER TOGGLE</div>
   <div id="content">
 
   </div>
   <script>
     var toneNumber = 2;
     var socket = io();
-    //
+    // When song request recieved
+    socket.on('SONG', function(toneNumber){
+      if(toneNumber == -1){
+        // Stop playing the tone
+      } else {
+        // Start playing the tone
+        $('#content').append('\n Got Message: ' + toneNumber);
+      }
+
+    });
+
+    // Test Hover
     $( document ).ready(function() {
       console.log('ready');
       $('#btn').click(function() {
@@ -26,9 +37,7 @@
         $('#content').append('\n Sent Message');
         return false;
       });
-      socket.on('SONG', function(toneNumber){
-        $('#content').append('\n Got Message: ' + toneNumber);
-      });
+
     });
 
     // Put event listeners into place
@@ -119,10 +128,12 @@
 
     function onHover() {
       console.log('hovering');
+      socket.emit('INFO', toneNumber);
     }
 
     function onHoverStop() {
       console.log('stopped hovering :(');
+      socket.emit('INFO', -1);
     }
 
     // lowLag.init({'force': 'webkitAudio'});

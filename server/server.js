@@ -14,8 +14,8 @@ io.on('connection', function(socket){
         console.log('user disconnected');
     });
     socket.on('INFO', function(num){
+        // Send response to all
         console.log('Tone number request: ' + num);
-        //socket.emit('SONG', playToneNumber(num));
         io.emit('SONG', playToneNumber(num));
     });
 });
