@@ -1,7 +1,16 @@
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+
 var prompt = require('prompt');
+
+var express = require('express'),
+app = express(),
+port = process.env.PORT || 3000;
+console.log(__dirname + '/public')
+app.use(express.static(__dirname + '/public'));
+var server = app.listen(port);
+
+var io        = require('socket.io').listen(server);
+
 prompt.start();
 
 
@@ -41,10 +50,6 @@ io.on('connection', function(socket){
         console.log('Tone number request: ' + num);
         io.emit('SONG', {'toneNumber': num, 'state': 0});
     });
-});
-
-http.listen(3000, function(){
-    console.log('listening on *:3000');
 });
 
 
