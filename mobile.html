@@ -10,13 +10,19 @@
   <button id="hoverBtn">Hover hand</button>
   <button id="unhoverBtn">Unhover hand</button>
   <video id="video" width="640" height="480" autoplay></video>
-  <div id="btn">HOVER TOGGLE</div>
+  <br />
+  <br />
+  <br />
+  <button id="takeBase">TAKE BASE LAYER</button>
   <div id="content">
 
   </div>
   <script>
+    var songsToLoad = ['sounds/tone1.wav'];
+
     var toneNumber = 2;
     var socket = io();
+
     // When song request recieved
     socket.on('SONG', function(toneNumber){
       if(toneNumber == -1){
@@ -25,16 +31,23 @@
         // Start playing the tone
         $('#content').append('\n Got Message: ' + toneNumber);
       }
+    });
+
+    socket.on('BASE', function(toneNumber){
+
+      $('#content').append('\n Take Base layer');
 
     });
+
+    function takeBaseLayer(){
+      socket.emit('BASE', '1');
+    }
 
     // Test Hover
     $( document ).ready(function() {
       console.log('ready');
-      $('#btn').click(function() {
-        console.log('Button Clicked');
-        socket.emit('INFO', toneNumber);
-        $('#content').append('\n Sent Message');
+      $('#takeBase').click(function() {
+        socket.emit('BASE', '1');
         return false;
       });
 
@@ -86,10 +99,8 @@
       context = new AudioContext();
 
       bufferLoader = new BufferLoader(
-        context,
-        [
-          'tune.mp3'
-        ],
+            context,
+              songsToLoad,
         finishedLoading
         );
 

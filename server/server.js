@@ -1,6 +1,12 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var prompt = require('prompt');
+prompt.start();
+
+
+promptForInput();
+
 
 app.get('/', function(req, res){
     res.sendfile('mobile.html');
@@ -29,4 +35,15 @@ function playToneNumber(number){
         toneNumber: number
     };
     return JSON.stringify(response);
+}
+function sendBaseLayerRequest() {
+    // Tell clients to take base layer
+    console.log('Telling clients to take base layer');
+    io.emit('BASE', 1);
+}
+function promptForInput(){
+    prompt.get('val', function (err, result) {
+        sendBaseLayerRequest();
+        promptForInput();
+    });
 }
