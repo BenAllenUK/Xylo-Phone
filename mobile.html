@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" >
+<head>
+<script type="text/javascript" src="js/BufferLoader.js"></script>
+</head>
+<body>
+  <video id="video" width="640" height="480" autoplay></video>
+
+  <script>
+
+    // Put event listeners into place
+    window.addEventListener("DOMContentLoaded", function() {
+      // Grab elements, create settings, etc.
+
+        video = document.getElementById("video"),
+        videoObj = { "video": true },
+        errBack = function(error) {
+          console.log("Video capture error: ", error.code); 
+        };
+
+      // Put video listeners into place
+      if(navigator.getUserMedia) { // Standard
+        navigator.getUserMedia(videoObj, function(stream) {
+          video.src = stream;
+          video.play();
+        }, errBack);
+      } else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+        navigator.webkitGetUserMedia(videoObj, function(stream){
+          video.src = window.webkitURL.createObjectURL(stream);
+          video.play();
+        }, errBack);
+      } else if(navigator.mozGetUserMedia) { // WebKit-prefixed
+        navigator.mozGetUserMedia(videoObj, function(stream){
+          video.src = window.URL.createObjectURL(stream);
+          video.play();
+        }, errBack);
+      }
+
+    }, false);
+
+    window.onload = init;
+    var context;
+    var bufferLoader;
+
+    function init() {
+      // Fix up prefixing
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      context = new AudioContext();
+
+      bufferLoader = new BufferLoader(
+        context,
+        [
+          'tune.mp3'
+        ],
+        finishedLoading
+        );
+
+      bufferLoader.load();
+    }
+
+    var globalBufferList = [];
+    var globalSourceList = [];
+    function finishedLoading(bufferList) {
+
+
+      for (var i=0; i<bufferList.length; i++) {
+        globalBufferList[i] = bufferList[i];
+      }
+
+    }
+
+    function setSound(index, state) {
+      if(state == 1) {
+        var source = context.createBufferSource();
+
+        source.buffer = globalBufferList[index];
+
+
+        source.connect(context.destination);
+
+        source.loop = true;
+        globalSourceList[index] = source;
+
+        globalSourceList[index].start();
+      } else {
+        globalSourceList[index].stop();
+        globalSourceList[index] = undefined;
+      }
+    }
+
+    // lowLag.init({'force': 'webkitAudio'});
+    // lowLag.load("tune.mp3");
+    // lowLag.play("tune.mp3");
+
+
+
+  </script>
+</body>
+</html>
