@@ -56,7 +56,11 @@ function sendBaseLayerRequest() {
 
 function promptForInput(){
     prompt.get('val', function (err, result) {
-        sendBaseLayerRequest();
-        promptForInput();
+        if(result.val != "e") {
+            sendBaseLayerRequest();
+            promptForInput();
+        } else {
+            process.exit();
+        }
     });
 }
