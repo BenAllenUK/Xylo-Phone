@@ -5,6 +5,8 @@
 <script type="text/javascript" src="js/BufferLoader.js"></script>
 </head>
 <body>
+  <button id="hoverBtn">Hover hand</button>
+  <button id="unhoverBtn">Unhover hand</button>
   <video id="video" width="640" height="480" autoplay></video>
 
   <script>
@@ -12,6 +14,12 @@
     // Put event listeners into place
     window.addEventListener("DOMContentLoaded", function() {
       // Grab elements, create settings, etc.
+
+        hoverButton = document.getElementById("hoverBtn");
+        unhoverButton = document.getElementById("unhoverBtn");
+
+        hoverButton.addEventListener("click", onHover);
+        unhoverButton.addEventListener("click", onHoverStop);
 
         video = document.getElementById("video"),
         videoObj = { "video": true },
@@ -87,6 +95,14 @@
         globalSourceList[index].stop();
         globalSourceList[index] = undefined;
       }
+    }
+
+    function onHover() {
+      console.log('hovering');
+    }
+
+    function onHoverStop() {
+      console.log('stopped hovering :(');
     }
 
     // lowLag.init({'force': 'webkitAudio'});
