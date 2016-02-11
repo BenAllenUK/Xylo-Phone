@@ -11,54 +11,30 @@
   <video id="video" width="640" style="display:none;" height="480" autoplay></video>
   <canvas id="canvas-source" style="display:none;" width="640" height="480"></canvas>
   <canvas id="canvas-blended" style="display:none;" width="640" height="480"></canvas>
-  <button id="btn">Click me</button>
-
-  <br />
-  <br />
-  <br />
-  <button id="takeBase">TAKE BASE LAYER</button>
-
   <div id="content">
-
+  <p id="position"></p>
   </div>
   <script>
     var baseImage;
-
     var songsToLoad = ['sounds/tone1.mp3'];
 
-    var toneNumber = 2;
+    var position;
 
     var socket = io();
 
     // When song request recieved
-    socket.on('SONG', function(toneNumber){
-      if(toneNumber == -1){
-        // Stop playing the tone
+    socket.on('SONG', setSound);
 
-      } else {
-        // Start playing the tone
+    socket.on('BASE', setBaseLayer);
 
-        $('#content').append('\n Got Message: ' + toneNumber);
-      }
+    socket.on('POSITION', function(pos) {
+      position = pos;
+      $('#position').text(position);
     });
-
-    socket.on('BASE', function(toneNumber){
-
-      $('#content').append('\n Take Base layer');
-
-    });
-
-    function takeBaseLayer(){
-      socket.emit('BASE', '1');
-    }
 
     // Test Hover
     $( document ).ready(function() {
       console.log('ready');
-      $('#takeBase').click(function() {
-        socket.emit('BASE', '1');
-        return false;
-      });
 
     });
     
@@ -123,7 +99,7 @@
         setSound(0,1);
         console.log('hovering');
         hovering = true;
-        socket.emit('INFO', toneNumber);
+        socket.emit('HOVER_START', position);
       }
     }
 
@@ -132,7 +108,7 @@
         setSound(0,0);
         console.log('stopped hovering :(');
         hovering = false;
-        socket.emit('INFO', -1);
+        socket.emit('HOVER_END', position);
       }
     }
 
