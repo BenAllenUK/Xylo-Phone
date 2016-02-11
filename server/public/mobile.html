@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" >
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <script type="text/javascript" src="js/BufferLoader.js"></script>
+  <script type="text/javascript" src="js/video.js"></script>
+</head>
+<body>
+  <video id="video" width="640" style="display:none;" height="480" autoplay></video>
+  <canvas id="canvas-source" style="display:none;" width="640" height="480"></canvas>
+  <canvas id="canvas-blended" style="display:none;" width="640" height="480"></canvas>
+  <div id="content">
+  <p id="position"></p>
+  </div>
+  <script>
+    var baseImage;
+    var songsToLoad = ['sounds/tone1.mp3'];
+
+    var position;
+
+    var socket = io();
+
+    // When song request recieved
+    socket.on('SONG', function(obj){
+      setSound(obj['toneNumber'], obj['state']);
+    });
+
+    socket.on('RESET', function(obj){
+      for(var i=0; i<globalSourceList.length; i++) {
+        if(globalSourceList[i]) {
+          globalSourceList[i].stop();
+        }
+      }
+    });
+
+    socket.on('BASE', setBaseLayer);
+
+    socket.on('POSITION', function(pos) {
+      position = pos;
+      $('#position').text(position);
+    });
+
+    // Test Hover
+    $( document ).ready(function() {
+      console.log('ready');
+
+    });
+    
+
+     window.onload = init;
+    var context;
+    var bufferLoader;
+
+    function init() {
+      // Fix up prefixing
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      context = new AudioContext();
+
+      bufferLoader = new BufferLoader(
+            context,
+              songsToLoad,
+        finishedLoading
+        );
+
+      bufferLoader.load();
+    }
+
+    var globalBufferList = [];
+    var globalSourceList = [];
+    function finishedLoading(bufferList) {
+
+
+      for (var i=0; i<bufferList.length; i++) {
+        globalBufferList[i] = bufferList[i];
+      }
+
+    }
+
+    function setBaseLayer() {
+      baseImage = contextSource.getImageData(0, 0, 640, 480);
+    }
+
+    function setSound(index, state) {
+      if(state == 1) {
+        var source = context.createBufferSource();
+
+        source.buffer = globalBufferList[index];
+
+
+        source.connect(context.destination);
+
+        source.loop = true;
+        globalSourceList[index] = source;
+
+        globalSourceList[index].start();
+      } else {
+        if (globalSourceList[index]) {
+          globalSourceList[index].stop();
+          globalSourceList[index] = undefined;
+        }
+      }
+    }
+
+    var hovering = false;
+
+    function onHover() {
+
+      if(!hovering) {
+        setSound(0,1);
+        console.log('hovering');
+        hovering = true;
+        socket.emit('HOVER_START', position);
+      }
+    }
+
+    function onHoverStop() {
+      if (hovering) {
+        setSound(0,0);
+        console.log('stopped hovering :(');
+        hovering = false;
+        socket.emit('HOVER_END', position);
+      }
+    }
+
+  </script>
+</body>
+</html>
