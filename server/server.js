@@ -22,7 +22,7 @@ io.on('connection', function(socket){
     socket.on('INFO', function(num){
         // Send response to all
         console.log('Tone number request: ' + num);
-        io.emit('SONG', playToneNumber(num));
+        io.emit('SONG', requestToneNumber(num));
     });
 });
 
@@ -30,7 +30,7 @@ http.listen(3000, function(){
     console.log('listening on *:3000');
 });
 
-function playToneNumber(number){
+function requestToneNumber(number){
     var response = {
         toneNumber: number
     };

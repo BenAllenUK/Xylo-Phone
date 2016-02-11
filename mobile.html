@@ -18,7 +18,7 @@
 
   </div>
   <script>
-    var songsToLoad = ['sounds/tone1.wav'];
+    var songsToLoad = ['sounds/tone1.mp3'];
 
     var toneNumber = 2;
     var socket = io();
@@ -27,8 +27,10 @@
     socket.on('SONG', function(toneNumber){
       if(toneNumber == -1){
         // Stop playing the tone
+
       } else {
         // Start playing the tone
+
         $('#content').append('\n Got Message: ' + toneNumber);
       }
     });
